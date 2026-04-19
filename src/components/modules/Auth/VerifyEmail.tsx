@@ -9,7 +9,7 @@ import { useSearchParams } from "next/navigation";
 import AppField from "@/components/shared/form/AppField";
 import { verifyEmailAction } from "@/services/auth.service";
 import { toast } from "sonner";
-import type { IVerifyEmailPayload } from "../../../../zod/auth.validation";
+import type { IVerifyEmailPayload } from "../../../zod/auth.validation";
 
 const VerifyEmail = () => {
   const hasSubmitted = useRef(false);

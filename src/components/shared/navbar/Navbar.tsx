@@ -23,7 +23,7 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between px-6 py-4 shadow-md">
       {/* Logo */}
-      <h1 className="text-xl font-bold text-blue-600">Logo</h1>
+      <h1 className="text-xl font-bold text-blue-600">MoveHub</h1>
 
       {/* Desktop Menu */}
       <div className="hidden md:block">

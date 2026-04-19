@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import AppField from "@/components/shared/form/AppField";
 import AppSubmitButton from "@/components/shared/form/AppSubmitButton";
@@ -14,13 +15,15 @@ import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ILoginPayload, loginZodSchema } from "../../../../zod/auth.validation";
+import { ILoginPayload, loginZodSchema } from "../../../zod/auth.validation";
 import { loginAction } from "@/services/auth.service";
 import { toast } from "sonner";
 
 const LoginForm = ({ redirectPath }: { redirectPath?: string }) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const router = useRouter();
   const { isPending, mutateAsync } = useMutation({
     mutationFn: (payload: ILoginPayload) => loginAction(payload, redirectPath),
   });
@@ -44,8 +47,20 @@ const LoginForm = ({ redirectPath }: { redirectPath?: string }) => {
         toast.success("Logged in Successfully", { id: toastId });
         console.log("Login result:", result);
         console.log("Login payload:", value);
-      } catch (error) {
+
+        // Redirect to the specified URL or dashboard
+        if (result.redirectUrl) {
+          router.push(result.redirectUrl);
+        }
+      } catch (error: unknown) {
         console.log(error);
+        const errorMessage =
+          (error as any)?.response?.data?.body?.message ||
+          (error as any)?.response?.data?.message ||
+          (error as any)?.data?.message ||
+          (error as any)?.message ||
+          "Login failed";
+        toast.error(errorMessage, { id: toastId });
       }
     },
   });

@@ -20,7 +20,7 @@ import { useState } from "react";
 import {
   IRegisterPayload,
   registerZodSchema,
-} from "../../../../zod/auth.validation";
+} from "../../../zod/auth.validation";
 import { registerAction } from "@/services/auth.service";
 import { IRegisterResponse } from "@/types/auth.types";
 import { toast } from "sonner";

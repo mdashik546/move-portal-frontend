@@ -9,7 +9,7 @@ import {
   registerZodSchema,
   verifyEmailZodSchema,
   IVerifyEmailPayload,
-} from "../../zod/auth.validation";
+} from "../zod/auth.validation";
 import {
   ILoginResponse,
   IRegisterResponse,
@@ -21,7 +21,6 @@ import {
   isValidRedirectForRole,
   UserRole,
 } from "@/lib/authUtlis";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
@@ -31,7 +30,7 @@ if (!API_BASE_URL) {
 export const loginAction = async (
   payload: ILoginPayload,
   redirectPath?: string,
-) => {
+): Promise<{ success: boolean; message: string; redirectUrl?: string }> => {
   const parsedPayload = loginZodSchema.safeParse(payload);
   if (!parsedPayload.success) {
     const firstError = parsedPayload.error.issues[0].message || "Invalid Input";
@@ -56,10 +55,23 @@ export const loginAction = async (
         ? redirectPath
         : getDefaultDashboardRoute(user.role as UserRole);
 
-    redirect(targetPath);
-  } catch (error) {
+    return {
+      success: true,
+      message: "Login successful",
+      redirectUrl: targetPath,
+    };
+  } catch (error: any) {
     console.log(error);
-    throw error;
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.response?.data?.body?.message ||
+      error?.data?.message ||
+      error?.message ||
+      "Login failed";
+    return {
+      success: false,
+      message: errorMessage,
+    };
   }
 };
 

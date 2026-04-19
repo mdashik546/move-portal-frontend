@@ -1,31 +1,51 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "@/types/api.types";
 import axios from "axios";
 import { isTokenExpiringSoon } from "../tokenUtlis";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { getNewTokensWithRefreshToken } from "@/services/auth.service";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!API_BASE_URL) {
   throw new Error("API_BASE_URL is not defined in environment variables");
 }
 
-async function TryRefreshToken(
+async function tryRefreshToken(
   accessToken: string,
   refreshToken: string,
 ): Promise<void> {
   if (!(await isTokenExpiringSoon(accessToken))) {
     return;
   }
-  const requestHeader = await headers()
-  if(requestHeader.get('x-'))
+  const requestHeader = await headers();
+  if (requestHeader.get("x-token-refreshed") === "1") {
+    return;
+  }
+  try {
+    await getNewTokensWithRefreshToken(refreshToken);
+  } catch (error: any) {
+    console.error("Error refreshing token in http client:", error);
+  }
 }
 
 const axiosInstance = async () => {
   try {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+    const refreshToken = cookieStore.get("refreshToken")?.value;
+    if (accessToken && refreshToken) {
+      await tryRefreshToken(accessToken, refreshToken);
+    }
+    const cookieHeader = cookieStore
+      .getAll()
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join(";");
     const instance = axios.create({
       baseURL: API_BASE_URL,
       timeout: 30000,
       headers: {
         "Content-Type": "application/json",
+        Cookie: cookieHeader,
       },
     });
     return instance;
