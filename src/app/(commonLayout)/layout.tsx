@@ -1,10 +1,12 @@
 import { Footer } from "@/components/shared/Footer";
 import Navbar from "@/components/shared/navbar/Navbar";
+import { getUserInfo } from "@/services/auth.service";
 
-const CommonLayout = ({ children }: { children: React.ReactNode }) => {
+const CommonLayout = async({ children }: { children: React.ReactNode }) => {
+    const userInfo = await getUserInfo();
   return (
     <div>
-      <Navbar />
+      <Navbar userInfo={userInfo}/>
       {children}
       <Footer />
     </div>

@@ -9,7 +9,10 @@ import {
   isRouteOwner,
   UserRole,
 } from "./lib/authUtlis";
-import { getNewTokensWithRefreshToken } from "./services/auth.service";
+import {
+  getNewTokensWithRefreshToken,
+  getUserInfo,
+} from "./services/auth.service";
 import { isTokenExpiringSoon } from "./lib/tokenUtlis";
 
 // -------------------------------
@@ -102,10 +105,7 @@ export async function proxy(request: NextRequest) {
     // -------------------------------
     // 4. TOKEN REFRESH (NO RETURN ❗)
     // -------------------------------
-    if (
-      refreshToken &&
-      (await isTokenExpiringSoon(accessToken as string))
-    ) {
+    if (refreshToken && (await isTokenExpiringSoon(accessToken as string))) {
       try {
         const refreshed = await refreshTokenMiddleware(refreshToken);
 
@@ -129,7 +129,37 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(loginUrl);
       }
     }
+    // 6. EMAIL VERIFICATION FLOW
+    // -------------------------------
+    if (accessToken) {
+      // ⚠️ Better: ideally remove API call and use token data
+      const userInfo = await getUserInfo();
 
+      if (userInfo) {
+        // Not verified → force verify email
+        if (!userInfo.emailVerified) {
+          if (pathname !== "/verify-email") {
+            const verifyEmailUrl = new URL("/verify-email", request.url);
+
+            verifyEmailUrl.searchParams.set("email", userInfo.email);
+
+            return NextResponse.redirect(verifyEmailUrl);
+          }
+
+          return NextResponse.next();
+        }
+
+        // already verified → block verify page
+        if (userInfo.emailVerified && pathname === "/verify-email") {
+          return NextResponse.redirect(
+            new URL(
+              getDefaultDashboardRoute(userRole as UserRole),
+              request.url,
+            ),
+          );
+        }
+      }
+    }
     // -------------------------------
     // 6. ROLE BASED ACCESS CONTROL
     // -------------------------------

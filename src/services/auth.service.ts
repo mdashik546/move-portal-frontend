@@ -9,11 +9,17 @@ import {
   registerZodSchema,
   verifyEmailZodSchema,
   IVerifyEmailPayload,
+  forgetPasswordZodSchema,
+  IForgetPasswordPayload,
+  resetPasswordZodSchema,
+  IResetPasswordPayload,
 } from "../zod/auth.validation";
 import {
+  IForgetPasswordResponse,
   ILoginResponse,
   IRegisterResponse,
   IVerifyEmailResponse,
+  IResetPasswordResponse,
 } from "@/types/auth.types";
 import { setTokenInCookies } from "@/lib/tokenUtlis";
 import {
@@ -21,6 +27,7 @@ import {
   isValidRedirectForRole,
   UserRole,
 } from "@/lib/authUtlis";
+import { deleteCookie } from "@/lib/cookieUtils";
 import { cookies } from "next/headers";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
@@ -46,9 +53,18 @@ export const loginAction = async (
       payload,
     );
     const { token, accessToken, refreshToken, user } = response;
+    // Check if email is verified
+    if (!user.emailVerified) {
+      return {
+        success: false,
+        message: "Please verify your email first",
+        redirectUrl: `/verify-email?email=${user.email}`,
+      };
+    }
     await setTokenInCookies("accessToken", accessToken);
     await setTokenInCookies("refreshToken", refreshToken);
     await setTokenInCookies("better-auth.session_token", token);
+
     const targetPath =
       redirectPath &&
       isValidRedirectForRole(redirectPath, user.role as UserRole)
@@ -68,6 +84,16 @@ export const loginAction = async (
       error?.data?.message ||
       error?.message ||
       "Login failed";
+
+    // Handle email not verified error
+    if (errorMessage === "Email not verified") {
+      return {
+        success: true,
+        message: "Please verify your email before logging in",
+        redirectUrl: `/verify-email?email=${payload.email}`,
+      };
+    }
+
     return {
       success: false,
       message: errorMessage,
@@ -120,7 +146,6 @@ export const verifyEmailAction = async (
         },
       },
     );
-    console.log(response, "response");
     return response.data;
 
     // const response = await httpClient.post<IVerifyEmailResponse>(
@@ -136,6 +161,85 @@ export const verifyEmailAction = async (
       error?.data?.message ||
       error?.message ||
       "Verification failed";
+
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+};
+
+export const forgetPasswordAction = async (
+  payload: IForgetPasswordPayload,
+): Promise<IForgetPasswordResponse> => {
+  const parsedPayload = forgetPasswordZodSchema.safeParse(payload);
+  if (!parsedPayload.success) {
+    const firstError = parsedPayload.error.issues[0].message || "Invalid Input";
+    return {
+      success: false,
+      message: firstError,
+    };
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/forgot-password`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.response?.data?.body?.message ||
+      error?.data?.message ||
+      error?.message ||
+      "Failed to send reset email";
+
+    return {
+      success: false,
+      message: errorMessage,
+    };
+  }
+};
+
+export const resetPasswordAction = async (
+  payload: IResetPasswordPayload,
+): Promise<IResetPasswordResponse> => {
+  const parsedPayload = resetPasswordZodSchema.safeParse(payload);
+  if (!parsedPayload.success) {
+    const firstError = parsedPayload.error.issues[0].message || "Invalid Input";
+    return {
+      success: false,
+      message: firstError,
+    };
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/auth/reset-password`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    console.log(response, "response");
+    return response.data;
+  } catch (error: any) {
+    console.log(error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.response?.data?.body?.message ||
+      error?.data?.message ||
+      error?.message ||
+      "Failed to reset password";
 
     return {
       success: false,
@@ -203,5 +307,21 @@ export async function getNewTokensWithRefreshToken(
   } catch (error) {
     console.error("Error refreshing token:", error);
     return false;
+  }
+}
+
+export async function logout() {
+  try {
+    const response = await httpClient.post("auth/logout", {});
+
+    // Clear all auth cookies
+    await deleteCookie("accessToken");
+    await deleteCookie("refreshToken");
+    await deleteCookie("better-auth.session_token");
+
+    return response;
+  } catch (error) {
+    console.error("Logout Error:", error);
+    throw error;
   }
 }

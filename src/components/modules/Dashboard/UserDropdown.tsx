@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,14 +9,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logout } from "@/services/auth.service";
 import { Key, LogOut, User } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface UserDropdownProps {
   userInfo: any;
 }
 
 const UserDropdown = ({ userInfo }: UserDropdownProps) => {
+  const router = useRouter();
+  const handleLogout = async () => {
+    const toastId = toast.loading("Logging out...");
+
+    try {
+      await logout();
+      toast.success("Logged out successfully", { id: toastId });
+      router.refresh()
+      router.push("/login");
+    } catch (error) {
+      toast.error("Logout failed. Try again!", { id: toastId });
+      console.error(error);
+    }
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -58,7 +76,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={() => {}}
+          onClick={() => handleLogout()}
           className="cursor-pointer text-red-600"
         >
           <LogOut className="mr-2 h-4 w-4" />

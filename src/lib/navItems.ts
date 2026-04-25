@@ -5,7 +5,6 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
   const defaultDashboard = getDefaultDashboardRoute(role);
   return [
     {
-      // title : "Dashboard",
       items: [
         {
           title: "Home",
@@ -25,12 +24,12 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
       ],
     },
     {
-      title: "Settings",
+      title: "Account Settings",
       items: [
         {
           title: "Change Password",
-          href: "change-password",
-          icon: "Settings",
+          href: "/change-password",
+          icon: "Lock",
         },
       ],
     },
@@ -39,27 +38,32 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
 
 export const adminNavItems: NavSection[] = [
   {
-    title: "User Management",
+    title: "Movie Management",
     items: [
       {
-        title: "Admins",
-        href: "/admin/dashboard/admins-management",
-        icon: "Shield",
+        title: "All Movies",
+        href: "/admin/dashboard/movies-management",
+        icon: "Film",
       },
       {
-        title: "Users",
-        href: "/admin/dashboard/doctors-management",
-        icon: "Stethoscope",
+        title: "Add New Movie",
+        href: "/admin/dashboard/add-movie",
+        icon: "PlusSquare",
       },
     ],
   },
   {
-    title: "Movie Management",
+    title: "System Management",
     items: [
       {
-        title: "Appointments",
-        href: "/admin/dashboard/appointments-management",
-        icon: "Calendar",
+        title: "Manage Users",
+        href: "/admin/dashboard/users-management",
+        icon: "Users",
+      },
+      {
+        title: "Sales & Payments",
+        href: "/admin/dashboard/payments",
+        icon: "DollarSign",
       },
     ],
   },
@@ -67,17 +71,22 @@ export const adminNavItems: NavSection[] = [
 
 export const userNavItems: NavSection[] = [
   {
-    title: "Appointments",
+    title: "Personal Space",
     items: [
       {
-        title: "My Appointments",
-        href: "/dashboard/my-appointments",
-        icon: "Calendar",
+        title: "My Watchlist",
+        href: "/dashboard/my-watchlist",
+        icon: "ListVideo",
       },
       {
-        title: "Book Appointment",
-        href: "/dashboard/book-appointments",
-        icon: "ClipboardList",
+        title: "Purchased Movies",
+        href: "/dashboard/my-purchases",
+        icon: "PlayCircle",
+      },
+      {
+        title: "Subscription Plan",
+        href: "/dashboard/subscription",
+        icon: "CreditCard",
       },
     ],
   },
@@ -92,5 +101,8 @@ export const getNavItemsByRole = (role: UserRole): NavSection[] => {
 
     case UserRole.USER:
       return [...commonNavItems, ...userNavItems];
+
+    default:
+      return commonNavItems;
   }
 };

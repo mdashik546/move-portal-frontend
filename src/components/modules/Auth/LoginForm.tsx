@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { EyeOff } from "lucide-react";
+import { EyeOff, Eye } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -38,28 +38,43 @@ const LoginForm = ({ redirectPath }: { redirectPath?: string }) => {
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Logging in...");
+
       try {
         const result = await mutateAsync(value);
+        //  verify-email FIRST
+        if (result.redirectUrl?.includes("/verify-email")) {
+          toast.info(result.message || "Please verify your email", {
+            id: toastId,
+          });
+
+          setTimeout(() => {
+            router.push(result.redirectUrl!);
+          }, 1200);
+
+          return;
+        }
+
+        // FAIL
         if (!result.success) {
           toast.error(result.message, { id: toastId });
           return;
         }
-        toast.success("Logged in Successfully", { id: toastId });
-        console.log("Login result:", result);
-        console.log("Login payload:", value);
 
-        // Redirect to the specified URL or dashboard
+        // SUCCESS
+        toast.success("Logged in Successfully", { id: toastId });
         if (result.redirectUrl) {
           router.push(result.redirectUrl);
         }
       } catch (error: unknown) {
         console.log(error);
+
         const errorMessage =
           (error as any)?.response?.data?.body?.message ||
           (error as any)?.response?.data?.message ||
           (error as any)?.data?.message ||
           (error as any)?.message ||
           "Login failed";
+
         toast.error(errorMessage, { id: toastId });
       }
     },
@@ -112,7 +127,7 @@ const LoginForm = ({ redirectPath }: { redirectPath?: string }) => {
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
                     {showPassword ? (
-                      <EyeOff className="size-4" aria-hidden="true" />
+                      <Eye className="size-4" aria-hidden="true" />
                     ) : (
                       <EyeOff className="size-4" aria-hidden="true" />
                     )}
@@ -138,7 +153,7 @@ const LoginForm = ({ redirectPath }: { redirectPath?: string }) => {
                 pendingLabel="Logging In..."
                 disable={!canSubmit}
               >
-                Login In
+                Sign In
               </AppSubmitButton>
             )}
           </form.Subscribe>

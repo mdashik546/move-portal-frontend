@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -6,16 +7,11 @@ import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { menuItems } from "./navData";
+import UserDropdown from "@/components/modules/Dashboard/UserDropdown";
 
-function Navbar() {
+function Navbar({ userInfo }: any) {
   const [open, setOpen] = useState(false);
-
-  const menuItems = [
-    { label: "Home", href: "#" },
-    { label: "Browse", href: "#browse" },
-    { label: "My Watchlist", href: "#" },
-    { label: "New Releases", href: "#" },
-  ];
 
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 bg-linear-to-b from-black/80 to-black/20 backdrop-blur-sm">
@@ -43,7 +39,7 @@ function Navbar() {
           <div className="flex items-center gap-3">
             {/* Icons */}
             <div className="md:block hidden">
-              <Auth />
+              <Auth userInfo={userInfo} />
             </div>
             {/* Mobile Menu (Sheet) */}
             <Sheet open={open} onOpenChange={setOpen}>
@@ -55,7 +51,7 @@ function Navbar() {
 
               <SheetContent
                 side="left"
-                className="w-60 bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-md text-white pl-5"
+                className="w-60 bg-linear-to-b from-black/90 to-black/70 backdrop-blur-md text-white pl-5"
               >
                 <div className="mt-6 flex flex-col gap-4">
                   {menuItems.map((item) => (
@@ -70,7 +66,7 @@ function Navbar() {
                   ))}
                 </div>
                 <div className="md:hidden block">
-                  <Auth />
+                  <Auth userInfo={userInfo} />
                 </div>
               </SheetContent>
             </Sheet>
@@ -83,15 +79,21 @@ function Navbar() {
 
 export default Navbar;
 
-const Auth = () => {
+const Auth = ({ userInfo }: any) => {
   return (
-    <div className="flex items-center gap-2">
-      <Button variant="ghost" className="text-gray-300 hover:text-white">
-        <Link href={"/login"}>Login</Link>
-      </Button>
-      <Button className="bg-white text-black hover:bg-gray-200">
-        <Link href={"/register"}> Register</Link>
-      </Button>
+    <div>
+      {!userInfo ? (
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" className="text-gray-300 hover:text-white">
+            <Link href={"/login"}>Login</Link>
+          </Button>
+          <Button className="bg-white text-black hover:bg-gray-200">
+            <Link href={"/register"}> Register</Link>
+          </Button>
+        </div>
+      ) : (
+        <UserDropdown userInfo={userInfo}/>
+      )}
     </div>
   );
 };
