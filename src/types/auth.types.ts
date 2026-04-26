@@ -72,3 +72,8 @@ export interface IResetPasswordResponse {
   success: boolean;
   message: string;
 }
+
+export interface IChangePasswordResponse {
+  success: boolean;
+  message: string;
+}

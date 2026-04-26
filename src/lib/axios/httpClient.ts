@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ApiResponse } from "@/types/api.types";
 import axios from "axios";
-import { isTokenExpiringSoon } from "../tokenUtlis";
+import { isTokenExpiringSoon, isTokenExpired } from "../tokenUtlis";
 import { cookies, headers } from "next/headers";
 import { getNewTokensWithRefreshToken } from "@/services/auth.service";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -14,9 +14,12 @@ async function tryRefreshToken(
   accessToken: string,
   refreshToken: string,
 ): Promise<void> {
-  if (!(await isTokenExpiringSoon(accessToken))) {
+  const isExpiringSoon = await isTokenExpiringSoon(accessToken);
+  const isExpired = await isTokenExpired(accessToken);
+  if (!isExpiringSoon && !isExpired) {
     return;
   }
+
   const requestHeader = await headers();
   if (requestHeader.get("x-token-refreshed") === "1") {
     return;
