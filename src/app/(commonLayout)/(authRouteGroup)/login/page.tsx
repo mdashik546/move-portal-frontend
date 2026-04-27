@@ -1,4 +1,4 @@
-import LoginForm from "@/components/modules/Auth/LoginForm";
+import LoginForm from "@/components/modules/auth/LoginForm";
 
 interface LoginParams {
   searchParams: Promise<{ redirect?: string }>;
@@ -7,7 +7,7 @@ interface LoginParams {
 export default async function LoginPage({ searchParams }: LoginParams) {
   const params = await searchParams;
   const redirectPath = params.redirect;
-  console.log(redirectPath);
+  console.log(redirectPath, "redirectPath");
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">

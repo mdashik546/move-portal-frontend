@@ -92,7 +92,7 @@ export const userNavItems: NavSection[] = [
   },
 ];
 
-export const getNavItemsByRole = (role: UserRole): NavSection[] => {
+export const getDashboardNavigationByRole = (role: UserRole): NavSection[] => {
   const commonNavItems = getCommonNavItems(role);
 
   switch (role) {
@@ -104,5 +104,43 @@ export const getNavItemsByRole = (role: UserRole): NavSection[] => {
 
     default:
       return commonNavItems;
+  }
+};
+
+export const getDefaultNavItemsByRole = (role: UserRole): NavSection[] => {
+  const defaultDashboard = getDefaultDashboardRoute(role);
+  return [
+    {
+      items: [
+        {
+          title: "Dashboard",
+          href: defaultDashboard,
+        },
+      ],
+    },
+  ];
+};
+
+const publicNavItems: NavSection[] = [
+  {
+    items: [
+      { title: "Home", href: "/" },
+      { title: "Movies", href: "/movies" },
+      { title: "Pricing", href: "/pricing" },
+      { title: "About", href: "/about" },
+    ],
+  },
+];
+
+export const getNavigationItemsByRole = (role: UserRole): NavSection[] => {
+  const defaultItems = getDefaultNavItemsByRole(role);
+
+  switch (role) {
+    case UserRole.ADMIN:
+    case UserRole.USER:
+      return [ ...publicNavItems,...defaultItems,];
+
+    default:
+      return publicNavItems;
   }
 };

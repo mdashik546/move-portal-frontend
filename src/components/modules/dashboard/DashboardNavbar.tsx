@@ -1,16 +1,16 @@
-import { getNavItemsByRole } from "@/lib/navItems";
-import DashboardSidebarContent from "./DashboardSidebarContent";
 import { getUserInfo } from "@/services/auth.service";
+import DashboardNavbarContent from "./DashboardNavbarContent";
 import { NavSection } from "@/types/dashboard.types";
+import { getDashboardNavigationByRole } from "@/lib/navItems";
 import { getDefaultDashboardRoute } from "@/lib/authUtlis";
 
-const DashboardSidebar = async () => {
+const DashboardNavbar = async () => {
   const userInfo = await getUserInfo();
-  const navItems: NavSection[] = getNavItemsByRole(userInfo.role);
+  const navItems: NavSection[] = getDashboardNavigationByRole(userInfo.role);
   const dashboardHome = getDefaultDashboardRoute(userInfo.role);
 
   return (
-    <DashboardSidebarContent
+    <DashboardNavbarContent
       userInfo={userInfo}
       navItems={navItems}
       dashboardHome={dashboardHome}
@@ -18,4 +18,4 @@ const DashboardSidebar = async () => {
   );
 };
 
-export default DashboardSidebar;
+export default DashboardNavbar;

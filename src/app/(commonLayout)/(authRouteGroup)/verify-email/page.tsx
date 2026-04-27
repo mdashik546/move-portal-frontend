@@ -1,4 +1,4 @@
-import VerifyEmail from "@/components/modules/Auth/VerifyEmail";
+import VerifyEmail from "@/components/modules/auth/VerifyEmail";
 
 const VerifyEmailPage = () => {
   return (

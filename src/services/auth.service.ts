@@ -13,8 +13,6 @@ import {
   IForgetPasswordPayload,
   resetPasswordZodSchema,
   IResetPasswordPayload,
-  changePasswordZodSchema,
-  IChangePasswordPayload,
 } from "../zod/auth.validation";
 import {
   IForgetPasswordResponse,
@@ -22,7 +20,6 @@ import {
   IRegisterResponse,
   IVerifyEmailResponse,
   IResetPasswordResponse,
-  IChangePasswordResponse,
 } from "@/types/auth.types";
 import { setTokenInCookies } from "@/lib/tokenUtlis";
 import {
