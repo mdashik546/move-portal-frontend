@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import LoadingState from "@/components/shared/Loading";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +16,7 @@ const UserDashboardStats = () => {
     queryFn: statsService.getAllStats,
   });
 
-  if (isLoading && !data) return <LoadingState />;
+  if (isLoading) return <LoadingState />;
   const dashboardData: Stat[] = data?.data?.data ?? [];
   console.log(dashboardData);
   return (

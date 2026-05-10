@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import Error from "@/app/error";
 import LoadingState from "@/components/shared/Loading";
 import { movieService } from "@/services/movie.service";
 import { MovieCardProps } from "@/types/movie.types";
@@ -8,12 +9,13 @@ import { Ticket, Calendar, Play, AlertCircle } from "lucide-react";
 import Image from "next/image";
 
 const MySubscriptions = () => {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["my-library"],
     queryFn: movieService.getMyMovies,
   });
 
-  if (isLoading && !data) return <LoadingState />;
+  if (isLoading) return <LoadingState />;
+  if (isError) return <Error error={error as Error} reset={refetch} />;
 
   const subscriptions = data?.data ?? [];
   console.log(subscriptions);

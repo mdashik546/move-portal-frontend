@@ -30,7 +30,7 @@ const SingleMovie = ({ userInfo, id }: UserInfoProps) => {
   }
 
   const movie: MovieCardProps = data?.data;
-  if (isLoading && !data) return <LoadingState />;
+  if (isLoading) return <LoadingState />;
 
   if (!movie) return <div>Movie not found</div>;
 

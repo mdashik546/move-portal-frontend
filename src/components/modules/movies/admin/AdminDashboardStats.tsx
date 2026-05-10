@@ -15,7 +15,7 @@ const AdminDashboardStats = () => {
     queryFn: statsService.getAllStats,
   });
 
-  if (isLoading && !data) return <LoadingState />;
+  if (isLoading) return <LoadingState />;
   const dashboardData: Stat[] = data?.data?.data ?? [];
   return (
     <div>
