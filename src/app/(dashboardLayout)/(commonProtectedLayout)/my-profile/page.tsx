@@ -8,7 +8,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getUserInfo } from "@/services/auth.service";
-
+export const dynamic = "force-dynamic";
 const MyProfilePage = async () => {
   const user = await getUserInfo();
 

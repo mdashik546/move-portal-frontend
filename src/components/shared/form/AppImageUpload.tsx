@@ -35,14 +35,12 @@ export default function AppImageUpload({ field, label }: Props) {
           {/* <div className="text-2xl group-hover:scale-110 transition">
             📤
           </div> */}
-          <p className="text-sm text-gray-600">
-            Click or drag to upload
-          </p>
+          <p className="text-sm text-gray-600">Click or drag to upload</p>
         </div>
       </div>
 
       {/* Preview */}
-      {file && (
+      {file instanceof File && (
         <div className="relative mt-3 w-fit">
           {/* Image */}
           <Image

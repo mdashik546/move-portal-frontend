@@ -1,5 +1,5 @@
 import AddMovieForm from "@/components/modules/movies/admin/AddMovieForm";
-
+export const dynamic = "force-dynamic";
 const AddMoviePage = () => {
   return (
     <div className="flex h-[calc(100vh-110px)] flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">

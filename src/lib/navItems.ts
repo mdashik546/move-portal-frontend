@@ -42,7 +42,7 @@ export const adminNavItems: NavSection[] = [
     items: [
       {
         title: "All Movies",
-        href: "/admin/dashboard/movies-management",
+        href: "/admin/dashboard/movies",
         icon: "Film",
       },
       {
@@ -52,21 +52,21 @@ export const adminNavItems: NavSection[] = [
       },
     ],
   },
-  {
-    title: "System Management",
-    items: [
-      {
-        title: "Manage Users",
-        href: "/admin/dashboard/users-management",
-        icon: "Users",
-      },
-      {
-        title: "Sales & Payments",
-        href: "/admin/dashboard/payments",
-        icon: "DollarSign",
-      },
-    ],
-  },
+  // {
+  //   title: "System Management",
+  //   items: [
+  //     {
+  //       title: "Manage Users",
+  //       href: "/admin/dashboard/users-management",
+  //       icon: "Users",
+  //     },
+  //     {
+  //       title: "Sales & Payments",
+  //       href: "/admin/dashboard/payments",
+  //       icon: "DollarSign",
+  //     },
+  //   ],
+  // },
 ];
 
 export const userNavItems: NavSection[] = [
@@ -74,19 +74,9 @@ export const userNavItems: NavSection[] = [
     title: "Personal Space",
     items: [
       {
-        title: "My Watchlist",
-        href: "/dashboard/my-watchlist",
+        title: "My Library",
+        href: "/dashboard/my-library",
         icon: "ListVideo",
-      },
-      {
-        title: "Purchased Movies",
-        href: "/dashboard/my-purchases",
-        icon: "PlayCircle",
-      },
-      {
-        title: "Subscription Plan",
-        href: "/dashboard/subscription",
-        icon: "CreditCard",
       },
     ],
   },
@@ -125,10 +115,14 @@ const publicNavItems: NavSection[] = [
   {
     items: [
       { title: "Home", href: "/" },
-      { title: "Movies", href: "/movies" },
-      { title: "Pricing", href: "/pricing" },
       { title: "About", href: "/about" },
     ],
+  },
+];
+
+const commonProtectedNavs = [
+  {
+    items: [{ title: "My Library", href: "my-library" }],
   },
 ];
 
@@ -136,9 +130,11 @@ export const getNavigationItemsByRole = (role: UserRole): NavSection[] => {
   const defaultItems = getDefaultNavItemsByRole(role);
 
   switch (role) {
-    case UserRole.ADMIN:
     case UserRole.USER:
-      return [ ...publicNavItems,...defaultItems,];
+      return [...publicNavItems, ...commonProtectedNavs, ...defaultItems];
+
+    case UserRole.ADMIN:
+      return [...publicNavItems, ...defaultItems];
 
     default:
       return publicNavItems;

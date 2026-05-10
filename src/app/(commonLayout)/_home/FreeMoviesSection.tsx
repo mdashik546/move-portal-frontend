@@ -7,123 +7,112 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Card } from "@/components/ui/card";
-import { Play, Star } from "lucide-react";
+import { Play, Tv } from "lucide-react"; // Tv icon for a fresh look
+import { useQuery } from "@tanstack/react-query";
+import { movieService } from "@/services/movie.service";
+import LoadingState from "@/components/shared/Loading";
+import { MovieCardProps } from "@/types/movie.types";
+import Image from "next/image";
+import Link from "next/link";
 
 export function FreeMoviesSection() {
-  const movies = [
-    {
-      id: 1,
-      title: "The Midnight Sky",
-      year: 2020,
-      rating: "PG-13",
-      genre: "Sci-Fi",
-    },
-    { id: 2, title: "Don't Look Up", year: 2021, rating: "R", genre: "Comedy" },
-    {
-      id: 3,
-      title: "Red Notice",
-      year: 2021,
-      rating: "PG-13",
-      genre: "Action",
-    },
-    {
-      id: 4,
-      title: "Glass Onion",
-      year: 2022,
-      rating: "PG-13",
-      genre: "Mystery",
-    },
-    {
-      id: 5,
-      title: "Murder Mystery",
-      year: 2019,
-      rating: "PG-13",
-      genre: "Comedy",
-    },
-    { id: 6, title: "Bird Box", year: 2018, rating: "R", genre: "Thriller" },
-    { id: 7, title: "Extraction", year: 2020, rating: "R", genre: "Action" },
-    {
-      id: 8,
-      title: "The Adam Project",
-      year: 2022,
-      rating: "PG-13",
-      genre: "Adventure",
-    },
-  ];
+  const { data: movies, isLoading } = useQuery({
+    queryKey: ["movies"],
+    queryFn: movieService.getAllMovies,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  if (isLoading) {
+    return <LoadingState message="Loading free movies..." />;
+  }
+
+  const filterMovies =
+    movies?.data?.filter((movie: MovieCardProps) => !movie.isPremium) || [];
 
   return (
-    <section className="bg-black py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="bg-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="mb-8 flex items-end justify-between">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-extrabold tracking-tight text-white md:text-3xl">
-              Free Movies
+        {/* Simple Header - Consistent with Premium Section */}
+        <div className="mb-8 flex items-end justify-between border-b border-zinc-800 pb-4">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              <Tv className="h-5 w-5 text-green-500" />
+              Free to Watch
             </h2>
-            <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em]">
-              Instant Stream
+            <p className="text-[10px] text-zinc-500 mt-1 uppercase tracking-[0.2em]">
+              Enjoy instant streaming at no cost
             </p>
           </div>
-          <button className="text-zinc-400 hover:text-white text-xs font-bold transition-colors uppercase tracking-widest">
-            View All
-          </button>
+          <Link 
+            href="/movies" 
+            className="text-xs font-bold text-green-500 hover:text-green-400 transition-colors uppercase tracking-widest"
+          >
+            Explore Free
+          </Link>
         </div>
 
-        {/* Carousel with Hover Buffer */}
-        <Carousel
-          opts={{ align: "start", loop: true }}
-          className="group/carousel relative w-full p-4 -m-4"
-        >
-          <CarouselContent className="-ml-1.5">
-            {movies.map((movie) => (
-              <CarouselItem
-                key={movie.id}
-                className="pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
-              >
-                <Card className="group relative aspect-2/3 overflow-hidden border-0 bg-zinc-900 transition-all duration-500 hover:scale-103 hover:z-50 ring-1 ring-white/10 hover:ring-green-500/50 hover:shadow-[0_0_30px_-10px_rgba(34,197,94,0.5)] cursor-pointer rounded-xl">
-                  {/* Poster Mesh Background */}
-                  <div className="absolute inset-0 bg-linear-to-br from-zinc-800 via-zinc-950 to-black" />
+        {filterMovies.length === 0 ? (
+          <p className="text-zinc-500 text-sm italic">Stay tuned for free movies.</p>
+        ) : (
+          <Carousel
+            opts={{ align: "start" }}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4">
+              {filterMovies.map((movie: MovieCardProps) => (
+                <CarouselItem
+                  key={movie.id}
+                  className="pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
+                >
+                  {/* Link applied to the whole card for better UX */}
+                  <Link href={`/movies/${movie.id}`}>
+                    <div className="group relative aspect-2/3 overflow-hidden rounded-lg bg-zinc-900 border border-white/5 transition-all cursor-pointer">
+                      
+                      {/* Poster Image */}
+                      <Image
+                        src={movie?.posterUrl}
+                        alt={movie.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
 
-                  {/* Play Overlay */}
-                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 opacity-0 transition-all duration-300 group-hover:opacity-100">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500 text-white shadow-lg shadow-green-500/20 transition-transform duration-300 group-hover:scale-110">
-                      <Play className="ml-1 h-5 w-5 fill-white" />
+                      {/* Clean Overlay */}
+                      <div className="absolute inset-0 bg-linear-to-t from-black/90 via-transparent to-transparent" />
+
+                      {/* Hover Action Icon */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
+                        <div className="h-10 w-10 rounded-full bg-green-500 flex items-center justify-center text-white shadow-lg">
+                          <Play className="h-5 w-5 fill-current ml-0.5" />
+                        </div>
+                      </div>
+
+                      {/* Info Overlay */}
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <h3 className="truncate text-[13px] font-bold text-white transition-colors group-hover:text-green-400 uppercase tracking-tight">
+                          {movie.title}
+                        </h3>
+                        <p className="text-[9px] text-zinc-500 mt-0.5 uppercase">
+                          {movie.releaseYear} • {movie.genre}
+                        </p>
+                      </div>
+
+                      {/* Subtle FREE Badge */}
+                      <div className="absolute top-2 left-2">
+                        <div className="rounded bg-green-500/90 px-1.5 py-0.5 text-[8px] font-black text-white">
+                          FREE
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
 
-                  {/* Info Overlay */}
-                  <div className="absolute inset-x-0 bottom-0 z-10 p-3 bg-linear-to-t from-black via-black/80 to-transparent">
-                    <h3 className="truncate text-xs font-bold text-white group-hover:text-green-400 transition-colors">
-                      {movie.title}
-                    </h3>
-
-                    <div className="mt-1.5 flex items-center gap-2 text-[9px] font-bold text-zinc-400">
-                      <span className="flex items-center gap-0.5 text-yellow-500">
-                        <Star className="h-2.5 w-2.5 fill-yellow-500" /> 8.4
-                      </span>
-                      <span>{movie.year}</span>
-                      <span className="rounded bg-zinc-800 px-1 py-0.5 text-zinc-300 ring-1 ring-inset ring-white/5">
-                        {movie.rating}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Small FREE Badge */}
-                  <div className="absolute left-2 top-2 z-30">
-                    <div className="flex items-center gap-1 rounded-md bg-green-600/90 px-1.5 py-0.5 text-[8px] font-black text-white backdrop-blur-sm border border-white/10">
-                      FREE
-                    </div>
-                  </div>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-
-          {/* Luxury Navigation - Centered vertically and popping out slightly */}
-          <CarouselPrevious className="absolute -left-2 top-1/2 h-9 w-9 border-white/10 bg-zinc-900/90 text-white opacity-0 transition-all hover:bg-green-600 hover:text-white group-hover/carousel:opacity-100 hidden sm:flex -translate-y-1/2" />
-          <CarouselNext className="absolute -right-2 top-1/2 h-9 w-9 border-white/10 bg-zinc-900/90 text-white opacity-0 transition-all hover:bg-green-600 hover:text-white group-hover/carousel:opacity-100 hidden sm:flex -translate-y-1/2" />
-        </Carousel>
+            {/* Navigation Arrows - Match Premium Style */}
+            <CarouselPrevious className="hidden md:flex -left-4 border-none bg-zinc-900/80 text-white hover:bg-green-500 hover:text-white transition-all" />
+            <CarouselNext className="hidden md:flex -right-4 border-none bg-zinc-900/80 text-white hover:bg-green-500 hover:text-white transition-all" />
+          </Carousel>
+        )}
       </div>
     </section>
   );

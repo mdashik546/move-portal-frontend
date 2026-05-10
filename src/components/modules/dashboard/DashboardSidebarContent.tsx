@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { getIconComponent } from "@/lib/iconMapper"
-import { cn } from "@/lib/utils"
-import { NavSection } from "@/types/dashboard.types"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { getIconComponent } from "@/lib/iconMapper";
+import { cn } from "@/lib/utils";
+import { NavSection } from "@/types/dashboard.types";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface DashboardSidebarContentProps {
-    userInfo : any,
-    navItems : NavSection[],
-    dashboardHome : string,
-
+  userInfo: any;
+  navItems: NavSection[];
+  dashboardHome: string;
 }
 
-
-
-const DashboardSidebarContent = ({dashboardHome, navItems, userInfo} : DashboardSidebarContentProps) => {
-    const pathname = usePathname()
+const DashboardSidebarContent = ({
+  dashboardHome,
+  navItems,
+  userInfo,
+}: DashboardSidebarContentProps) => {
+  const pathname = usePathname();
   return (
     <div className="hidden md:flex h-full w-64 flex-col border-r bg-card overflow-y-auto">
       {/* Logo / Brand */}
@@ -45,7 +45,7 @@ const DashboardSidebarContent = ({dashboardHome, navItems, userInfo} : Dashboard
                 {section.items.map((item, id) => {
                   const isActive = pathname === item.href;
                   // Icon Mapper Function
-                  const Icon = getIconComponent(item.icon);
+                  const Icon = getIconComponent(item.icon as string);
 
                   return (
                     <Link
@@ -58,7 +58,7 @@ const DashboardSidebarContent = ({dashboardHome, navItems, userInfo} : Dashboard
                           : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                       )}
                     >
-                      <Icon className="w-4 h-4" />
+                      {Icon && <Icon className="w-4 h-4" />}
                       <span>{item.title}</span>
                     </Link>
                   );
@@ -92,6 +92,6 @@ const DashboardSidebarContent = ({dashboardHome, navItems, userInfo} : Dashboard
       </div>
     </div>
   );
-}
+};
 
-export default DashboardSidebarContent
+export default DashboardSidebarContent;

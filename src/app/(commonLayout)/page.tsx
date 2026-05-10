@@ -1,26 +1,22 @@
+import { getUserInfo } from "@/services/auth.service";
 import { FAQSection } from "./_home/FAQSection";
 import { FreeMoviesSection } from "./_home/FreeMoviesSection";
 import HeroSection from "./_home/HeroSection";
-// import { HeroSection } from "./_home/HeroSection";
 import InfoSection from "./_home/InfoSection";
-import { MovieSubscriptionSection } from "./_home/MovieSubcriptionSection";
-import { PremiumMoviesSection } from "./_home/PremiumMoviesSection";
+import MyMoviesPage from "./movies/page";
+export const dynamic = "force-dynamic";
+const CommonHomePage = async () => {
+  const userInfo = await getUserInfo();
 
-const CommonHomePage = () => {
   return (
-    <div>
-      <main className="min-h-screen bg-black">
-        <HeroSection />
-        <FreeMoviesSection />
-        <PremiumMoviesSection />
-        <MovieSubscriptionSection />
-        <InfoSection />
-        <FAQSection />
-
-        {/* Footer Spacer */}
-        <div className="h-20" />
-      </main>
-    </div>
+    <main className="min-h-screen bg-black">
+      <HeroSection userInfo={userInfo} />
+      <FreeMoviesSection />
+      <MyMoviesPage />
+      <InfoSection />
+      <FAQSection />
+      <div className="h-20" />
+    </main>
   );
 };
 

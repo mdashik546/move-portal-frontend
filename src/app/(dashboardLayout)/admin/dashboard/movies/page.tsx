@@ -1,23 +1,24 @@
-import UserDashboardStats from "@/components/modules/movies/user/UserDashboardStats";
-import { statsService } from "@/services/stats.service";
+import AllMovies from "@/components/modules/movies/admin/Movies";
+import { movieService } from "@/services/movie.service";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
 export const dynamic = "force-dynamic";
-
-const DashboardPage = async () => {
+const AllMoviesPage = async () => {
   const queryClient = new QueryClient();
+
   await queryClient.prefetchQuery({
-    queryKey: ["stats"],
-    queryFn: statsService.getAllStats,
+    queryKey: ["movies"],
+    queryFn: () => movieService.getAllMovies(),
   });
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <UserDashboardStats />
+      <AllMovies />
     </HydrationBoundary>
   );
 };
 
-export default DashboardPage;
+export default AllMoviesPage;

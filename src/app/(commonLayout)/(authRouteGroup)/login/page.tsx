@@ -1,5 +1,5 @@
 import LoginForm from "@/components/modules/auth/LoginForm";
-
+export const dynamic = "force-dynamic";
 interface LoginParams {
   searchParams: Promise<{ redirect?: string }>;
 }

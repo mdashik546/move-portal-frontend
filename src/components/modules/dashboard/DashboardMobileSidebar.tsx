@@ -47,7 +47,7 @@ const DashboardMobileSidebar = ({
               <div className="space-y-1">
                 {section.items.map((item, id) => {
                   const isActive = pathname === item.href;
-                  const Icon = getIconComponent(item.icon);
+                  const Icon = getIconComponent(item.icon as string);
 
                   return (
                     <Link

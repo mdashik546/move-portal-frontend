@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import AppField from "@/components/shared/form/AppField";
@@ -11,9 +12,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { movieService } from "@/services/movie.service";
 import { useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 function AddMovieForm() {
+  const { isPending, mutateAsync } = useMutation({
+    mutationFn: movieService.createMovie,
+  });
   const form = useForm({
     defaultValues: {
       title: "",
@@ -23,33 +30,60 @@ function AddMovieForm() {
       price: "",
       director: "",
       cast: "",
-      posterUrl: "",
+      posterUrl: null as File | null,
       videoUrl: "",
       isPremium: "false",
     },
 
     onSubmit: async ({ value }) => {
-      const payload = {
-        ...value,
-        releaseYear: Number(value.releaseYear),
-        price: Number(value.price),
-        cast: value.cast.split(",").map((c) => c.trim()),
-        isPremium: value.isPremium === "true",
-      };
+      const toastId = toast.loading("Creating movie...");
 
-      console.log("FINAL PAYLOAD:", payload);
+      try {
+        const formData = new FormData();
+
+        formData.append("title", value.title);
+        formData.append("description", value.description);
+        formData.append("genre", value.genre);
+
+        formData.append("releaseYear", String(value.releaseYear));
+        formData.append("price", String(value.price));
+
+        formData.append("director", value.director);
+        formData.append("videoUrl", value.videoUrl);
+        formData.append("isPremium", value.isPremium);
+
+        formData.append(
+          "cast",
+          JSON.stringify(value.cast.split(",").map((c) => c.trim())),
+        );
+
+        if (value.posterUrl instanceof File) {
+          formData.append("file", value.posterUrl);
+        }
+
+        const res = await mutateAsync(formData);
+
+        if (!res.success) {
+          toast.error(res.message, { id: toastId });
+          return;
+        }
+
+        toast.success("Movie created!", { id: toastId });
+        form.reset();
+      } catch (err: any) {
+        toast.error(err.message || "Failed to create movie", { id: toastId });
+      }
     },
   });
 
   return (
     <Card className="max-w-5xl mx-auto shadow-lg border">
       <CardHeader className="text-center space-y-2">
-        <CardTitle className="text-3xl font-bold">
-          🎬 Add New Movie
-        </CardTitle>
+        <CardTitle className="text-3xl font-bold">🎬 Add New Movie</CardTitle>
 
         <CardDescription>
-          Create a new movie entry with full details, pricing, and access control.
+          Create a new movie entry with full details, pricing, and access
+          control.
         </CardDescription>
       </CardHeader>
 
@@ -163,7 +197,7 @@ function AddMovieForm() {
                   field={field}
                   label="Video URL"
                   type="text"
-                  placeholder="https://youtube.com/embed/..."
+                  placeholder="Paste video embed link"
                 />
               )}
             </form.Field>
@@ -172,9 +206,7 @@ function AddMovieForm() {
           {/* IMAGE UPLOAD FULL WIDTH */}
           <div>
             <form.Field name="posterUrl">
-              {(field) => (
-                <AppImageUpload field={field} label="Poster Image" />
-              )}
+              {(field) => <AppImageUpload field={field} label="Poster Image" />}
             </form.Field>
           </div>
 
@@ -182,8 +214,8 @@ function AddMovieForm() {
           <div className="flex justify-center pt-4">
             <AppSubmitButton
               className="w-full md:w-80"
-              isPending={""}
-              disable={true}
+              isPending={isPending}
+              disable={isPending}
               pendingLabel="Creating Movie..."
             >
               Add Movie
