@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { CheckCircle2, Play, Home, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Play, ShieldCheck } from "lucide-react";
 export const dynamic = "force-dynamic";
 export default function PaymentSuccess() {
   const searchParams = useSearchParams();
@@ -11,10 +11,18 @@ export default function PaymentSuccess() {
   const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
-    if (sessionId) {
-      toast.success("Payment verified successfully!");
-    }
-  }, [sessionId]);
+    if (!sessionId) return;
+
+    const handlePaymentSuccess = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      router.refresh();
+
+      toast.success("Payment successful!");
+    };
+
+    handlePaymentSuccess();
+  }, [sessionId, router]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-black px-4">
@@ -61,9 +69,9 @@ export default function PaymentSuccess() {
 
         <button
           onClick={() => router.push("/")}
-          className="mt-8 flex items-center justify-center gap-2 rounded-lg border border-zinc-700 bg-transparent py-3 text-sm font-bold text-white transition-colors hover:bg-zinc-800"
+          className="flex items-center justify-center gap-2 rounded-lg bg-amber-500 py-3 w-full px-5 text-sm font-bold text-black transition-colors hover:bg-amber-400"
         >
-          <Home className="h-4 w-4" />
+          <Play className="h-4 w-4 fill-current" />
           Back to Home
         </button>
         {/* Footer Support Info */}
