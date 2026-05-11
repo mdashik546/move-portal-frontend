@@ -6,11 +6,11 @@ import {
 } from "@tanstack/react-query";
 import PremiumMovieCard from "../_home/PremiumMovieCard";
 export const dynamic = "force-dynamic";
-const MyMoviesPage = async () => {
+const PremiumPage = async () => {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
-    queryKey: ["my-movies"],
-    queryFn: movieService.getMyMovies,
+    queryKey: ["movies"],
+    queryFn: movieService.getAllMovies,
   });
 
   return (
@@ -20,4 +20,4 @@ const MyMoviesPage = async () => {
   );
 };
 
-export default MyMoviesPage;
+export default PremiumPage;

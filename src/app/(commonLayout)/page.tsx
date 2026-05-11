@@ -3,7 +3,7 @@ import { FAQSection } from "./_home/FAQSection";
 import { FreeMoviesSection } from "./_home/FreeMoviesSection";
 import HeroSection from "./_home/HeroSection";
 import InfoSection from "./_home/InfoSection";
-import MyMoviesPage from "./movies/page";
+import PremiumPage from "./movies/page";
 export const dynamic = "force-dynamic";
 const CommonHomePage = async () => {
   const userInfo = await getUserInfo();
@@ -12,7 +12,7 @@ const CommonHomePage = async () => {
     <main className="min-h-screen bg-black">
       <HeroSection userInfo={userInfo} />
       <FreeMoviesSection />
-      <MyMoviesPage />
+      <PremiumPage />
       <InfoSection />
       <FAQSection />
       <div className="h-20" />

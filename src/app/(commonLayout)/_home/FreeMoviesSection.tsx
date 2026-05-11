@@ -19,7 +19,7 @@ export function FreeMoviesSection() {
   const { data: movies, isLoading } = useQuery({
     queryKey: ["movies"],
     queryFn: movieService.getAllMovies,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
   });
 
   if (isLoading) {
@@ -43,8 +43,8 @@ export function FreeMoviesSection() {
               Enjoy instant streaming at no cost
             </p>
           </div>
-          <Link 
-            href="/movies" 
+          <Link
+            href="/movies"
             className="text-xs font-bold text-green-500 hover:text-green-400 transition-colors uppercase tracking-widest"
           >
             Explore Free
@@ -52,12 +52,11 @@ export function FreeMoviesSection() {
         </div>
 
         {filterMovies.length === 0 ? (
-          <p className="text-zinc-500 text-sm italic">Stay tuned for free movies.</p>
+          <p className="text-zinc-500 text-sm italic">
+            Stay tuned for free movies.
+          </p>
         ) : (
-          <Carousel
-            opts={{ align: "start" }}
-            className="w-full"
-          >
+          <Carousel opts={{ align: "start" }} className="w-full">
             <CarouselContent className="-ml-4">
               {filterMovies.map((movie: MovieCardProps) => (
                 <CarouselItem
@@ -67,7 +66,6 @@ export function FreeMoviesSection() {
                   {/* Link applied to the whole card for better UX */}
                   <Link href={`/movies/${movie.id}`}>
                     <div className="group relative aspect-2/3 overflow-hidden rounded-lg bg-zinc-900 border border-white/5 transition-all cursor-pointer">
-                      
                       {/* Poster Image */}
                       <Image
                         src={movie?.posterUrl}
