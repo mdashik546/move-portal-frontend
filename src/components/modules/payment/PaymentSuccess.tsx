@@ -13,17 +13,14 @@ export default function PaymentSuccess() {
   useEffect(() => {
     if (!sessionId) return;
 
-    const handlePaymentSuccess = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      router.refresh();
+    const run = () => {
+      router.refresh(); // just call it
 
       toast.success("Payment successful!");
     };
 
-    handlePaymentSuccess();
+    run();
   }, [sessionId, router]);
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-black px-4">
       {/* Container */}
@@ -69,7 +66,7 @@ export default function PaymentSuccess() {
 
         <button
           onClick={() => router.push("/")}
-          className="flex items-center justify-center gap-2 rounded-lg bg-amber-500 py-3 w-full px-5 text-sm font-bold text-black transition-colors hover:bg-amber-400"
+          className="flex mt-8 items-center justify-center gap-2 rounded-lg bg-amber-500 py-3 w-full px-5 text-sm font-bold text-black transition-colors hover:bg-amber-400"
         >
           <Play className="h-4 w-4 fill-current" />
           Back to Home
