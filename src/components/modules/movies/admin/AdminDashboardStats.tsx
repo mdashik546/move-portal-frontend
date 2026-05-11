@@ -2,7 +2,7 @@
 import LoadingState from "@/components/shared/Loading";
 import { Card, CardContent } from "@/components/ui/card";
 import { getIconComponent } from "@/lib/iconMapper";
-import { statsService } from "@/services/stats.service";
+import { getAllStats } from "@/services/stats.service";
 import { useQuery } from "@tanstack/react-query";
 interface Stat {
   label: string;
@@ -12,7 +12,7 @@ interface Stat {
 const AdminDashboardStats = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["stats"],
-    queryFn: statsService.getAllStats,
+    queryFn: getAllStats,
   });
 
   if (isLoading) return <LoadingState />;

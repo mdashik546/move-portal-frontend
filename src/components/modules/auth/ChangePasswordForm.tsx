@@ -19,34 +19,48 @@ import {
 } from "../../../zod/auth.validation";
 import { toast } from "sonner";
 import { deleteCookie } from "@/lib/cookieUtils";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
 const ChangePasswordForm = () => {
+  // const { isPending, mutateAsync } = useMutation({
+  //   mutationFn: async (payload: IChangePasswordPayload) => {
+  //     // Call the API directly from the client
+  //     try {
+  //       const res = await fetch(
+  //         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/change-password`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           credentials: "include", // send cookies
+  //           body: JSON.stringify(payload),
+  //         },
+  //       );
+  //       const data = await res.json();
+  //       return data;
+  //     } catch (error: any) {
+  //       return {
+  //         success: false,
+  //         message: error?.message || "Failed to change password",
+  //       };
+  //     }
+  //   },
+  // });
+
   const { isPending, mutateAsync } = useMutation({
     mutationFn: async (payload: IChangePasswordPayload) => {
-      // Call the API directly from the client
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/change-password`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include", // send cookies
-            body: JSON.stringify(payload),
-          },
-        );
-        const data = await res.json();
-        return data;
-      } catch (error: any) {
-        return {
-          success: false,
-          message: error?.message || "Failed to change password",
-        };
-      }
+      const data = await fetchWithAuth("/auth/change-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      return data;
     },
   });
-
   const form = useForm({
     defaultValues: {
       currentPassword: "",

@@ -27,7 +27,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
     try {
       await logout();
       toast.success("Logged out successfully", { id: toastId });
-      router.refresh()
+      router.refresh();
       router.push("/login");
     } catch (error) {
       toast.error("Logout failed. Try again!", { id: toastId });
@@ -39,7 +39,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
       <DropdownMenuTrigger asChild>
         <Button variant={"outline"} size={"icon"} className="rounded-full">
           <span className="text-sm font-semibold">
-            {userInfo.name.charAt(0).toUpperCase()}
+            {userInfo?.name?.charAt(0)?.toUpperCase()}
           </span>
         </Button>
       </DropdownMenuTrigger>
@@ -52,7 +52,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
             <p className="text-xs text-muted-foreground">{userInfo.email}</p>
 
             <p className="text-xs text-primary capitalize">
-              {userInfo.role.toLowerCase().replace("_", " ")}
+              {userInfo?.role?.toLowerCase().replace("_", " ")}
             </p>
           </div>
         </DropdownMenuLabel>

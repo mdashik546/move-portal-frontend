@@ -26,7 +26,7 @@ const DashboardSidebarContent = ({
       {/* Logo / Brand */}
       <div className="flex h-16 items-center border-b px-6">
         <Link href={dashboardHome}>
-          <span className="text-xl font-bold text-primary">MoveHub</span>
+          <span className="text-xl font-bold text-primary">MovieVault</span>
         </Link>
       </div>
 
@@ -78,7 +78,7 @@ const DashboardSidebarContent = ({
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
             <span className="text-sm font-semibold text-primary">
-              {userInfo.name.charAt(0).toUpperCase()}
+              {userInfo?.name?.charAt(0)?.toUpperCase()}
             </span>
           </div>
 

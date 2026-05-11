@@ -13,6 +13,17 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: "/api/auth/:path*",
+  //       destination:
+  //         process.env.NODE_ENV === "development"
+  //           ? "http://localhost:5000/api/v1/:path*"
+  //           : "https://movievault-api.vercel.app/api/v1/:path*",
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;

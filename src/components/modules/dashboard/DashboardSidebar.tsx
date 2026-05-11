@@ -6,8 +6,8 @@ import { getDefaultDashboardRoute } from "@/lib/authUtlis";
 
 const DashboardSidebar = async () => {
   const userInfo = await getUserInfo();
-  const navItems: NavSection[] = getDashboardNavigationByRole(userInfo.role);
-  const dashboardHome = getDefaultDashboardRoute(userInfo.role);
+  const navItems: NavSection[] = getDashboardNavigationByRole(userInfo?.role);
+  const dashboardHome = getDefaultDashboardRoute(userInfo?.role);
 
   return (
     <DashboardSidebarContent

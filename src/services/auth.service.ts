@@ -29,6 +29,8 @@ import {
 } from "@/lib/authUtlis";
 import { deleteCookie } from "@/lib/cookieUtils";
 import { cookies } from "next/headers";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 if (!API_BASE_URL) {
   throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined");
@@ -248,76 +250,34 @@ export const resetPasswordAction = async (
   }
 };
 
-// NOTE: This function is for server-side use only (API routes, server actions, etc).
-// Do NOT call this from client components. For client-side, use fetch/axios directly with credentials: 'include'.
-// export const changePasswordAction = async (
-//   payload: IChangePasswordPayload,
-// ): Promise<IChangePasswordResponse> => {
-//   const parsedPayload = changePasswordZodSchema.safeParse(payload);
-//   if (!parsedPayload.success) {
-//     const firstError = parsedPayload.error.issues[0].message || "Invalid Input";
-//     return {
-//       success: false,
-//       message: firstError,
-//     };
-//   }
-
-//   try {
-//     // const response = await httpClient.post<IChangePasswordResponse>(
-//     //   "auth/change-password",
-//     //   payload,
-//     // );
-//     // return response;
-//     const response = await axios.post(
-//       `${API_BASE_URL}/auth/change-password`,
-//       payload,
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         withCredentials: true, // 🔥 VERY IMPORTANT
-//       },
-//     );
-//     return response.data;
-//   } catch (error: any) {
-//     console.log(error);
-//     const errorMessage =
-//       error?.response?.data?.message ||
-//       error?.response?.data?.body?.message ||
-//       error?.data?.message ||
-//       error?.message ||
-//       "Failed to change password";
-
-//     return {
-//       success: false,
-//       message: errorMessage,
-//     };
-//   }
-// };
-
 export async function getUserInfo() {
   try {
     const cookieStore = await cookies();
+
     const accessToken = cookieStore.get("accessToken")?.value;
     const sessionToken = cookieStore.get("better-auth.session_token")?.value;
-    if (!accessToken) {
-      return null;
-    }
+
+    if (!accessToken && !sessionToken) return null;
+
+    const cookiesHeader = [
+      accessToken && `accessToken=${accessToken}`,
+      sessionToken && `better-auth.session_token=${sessionToken}`,
+    ]
+      .filter(Boolean)
+      .join("; ");
+
     const res = await fetch(`${API_BASE_URL}/auth/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Cookie: `accessToken=${accessToken}; better-auth.session_token=${sessionToken}`,
+        Cookie: cookiesHeader,
       },
+      cache: "no-store",
     });
 
-    if (!res.ok) {
-      console.error("Failed to fetch user info:", res.status, res.statusText);
-      return null;
-    }
+    if (!res.ok) return null;
 
     const { data } = await res.json();
-
     return data;
   } catch (error) {
     console.error("Error fetching user info:", error);

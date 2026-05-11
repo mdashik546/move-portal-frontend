@@ -18,18 +18,30 @@ const getTokenSecondsRemaining = (token: string) => {
   }
 };
 
+// export const setTokenInCookies = async (
+//   name: string,
+//   token: string,
+//   fallbackMaxAgeInSeconds = 60 * 60 * 24,
+// ) => {
+//   let maxAgeInSeconds;
+//   if (name !== "better-auth.session_token") {
+//     maxAgeInSeconds = getTokenSecondsRemaining(token);
+//   }
+//   await setCookie(name, token, maxAgeInSeconds || fallbackMaxAgeInSeconds);
+// };
+
 export const setTokenInCookies = async (
   name: string,
   token: string,
-  fallbackMaxAgeInSeconds = 60 * 60 * 24,
+  fallbackMaxAge = 60 * 60 * 24,
 ) => {
-  let maxAgeInSeconds;
-  if (name !== "better-auth.session_token") {
-    maxAgeInSeconds = getTokenSecondsRemaining(token);
-  }
-  await setCookie(name, token, maxAgeInSeconds || fallbackMaxAgeInSeconds);
-};
+  const maxAge =
+    name === "better-auth.session_token"
+      ? fallbackMaxAge
+      : getTokenSecondsRemaining(token) || fallbackMaxAge;
 
+  await setCookie(name, token, maxAge);
+};
 export async function isTokenExpiringSoon(
   token: string,
   thresholdInSeconds = 300,

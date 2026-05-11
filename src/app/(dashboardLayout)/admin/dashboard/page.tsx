@@ -1,6 +1,6 @@
 import AdminDashboardStats from "@/components/modules/movies/admin/AdminDashboardStats";
 import UserDashboard from "@/components/modules/movies/user/UserDashboardStats";
-import { statsService } from "@/services/stats.service";
+import { getAllStats } from "@/services/stats.service";
 import {
   dehydrate,
   HydrationBoundary,
@@ -11,7 +11,7 @@ const AdminDashboardPage = async () => {
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["stats"],
-    queryFn: statsService.getAllStats,
+    queryFn: getAllStats,
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
